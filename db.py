@@ -40,6 +40,6 @@ def insert_rankhis(data):
         cre=sqlite3.connect("bili.db")
         item.append(checkhan(cre,"rank_history")+1)
         t=cre.cursor()
-        t.execute("insert into rank_history(context,time,newor,kind,last,id)")
-    cre.commit()
+        t.execute("insert into rank_history(context,time,newor,kind,last,id)values(?,?,?,?,?,?)",item)
+        cre.commit()
 #cer_bili()    
