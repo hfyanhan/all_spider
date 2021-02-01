@@ -1,10 +1,8 @@
 from funcnetio import *
 import json,time
-header={
+header1={
 'Host': "api.bilibili.com",
 'sec-ch-ua':'''"Google Chrome";v="87", " Not;A Brand";v="99", "Chromium";v="87"''',
-#'Cookie': "buvid3=B0D9BECB-D695-414B-846A-B2EDA4C7857640772infoc; LIVE_BUVID=AUTO8515593048657300; pgv_pvi=152973312; sid=b53gif2j; blackside_state=1; CURRENT_FNVAL=80; DedeUserID=447571231; DedeUserID__ckMd5=6bf16ff15c0a360b; SESSDATA=724a5e12%2C1617290904%2Cd85c1*a1; bili_jct=8a2be0cec3ea44021fe2e1b2e9c505a6; _uuid=3E976774-5297-B938-35D4-B99BF753B4BF74970infoc; fingerprint3=877125c9294b468f9a335a5cd082ae15; fingerprint=c5ae947e8dd6ce473417eaf81dcf1cb4; buivd_fp=B0D9BECB-D695-414B-846A-B2EDA4C7857640772infoc; buvid_fp_plain=B0D9BECB-D695-414B-846A-B2EDA4C7857640772infoc; fingerprint_s=7781f651d0a5912032bec8892fc2728d; LIVE_PLAYER_TYPE=1; rpdid=|(u))uuYkk)u0J'uY|mRm|lYR; CURRENT_QUALITY=64; bp_t_offset_447571231=478316965730327065; PVID=4; bp_video_offset_447571231=480769847321573018; bfe_id=fdfaf33a01b88dd4692ca80f00c2de7f",
-
 'sec-ch-ua-mobile': '?0',
 'Sec-Fetch-Dest': 'document',
 'Sec-Fetch-Mode': 'navigate',
@@ -12,6 +10,66 @@ header={
 'Sec-Fetch-User': '?1',
 'Upgrade-Insecure-Requests': '1',
 'User-Agent': 'Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/87.0.4280.141 Safari/537.36'
+}
+headers2={"User-Agent": "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/72.0.3626.121 Safari/537.36",
+	  "Referer": "https://www.bilibili.com/ranking/all/0/0/3"}
+category_dic={
+	"all": "全站榜",
+	"origin": "原创榜",
+	"rookie": "新人榜",
+        "bangumi":"新番榜",
+        "cinema": "影视榜"
+}
+day_dic = {1: "日排行榜", 3: "三日排行榜", 7: "周排行榜", 30: "月排行榜"}
+all_or_origin_dic = {
+	0: "全站",
+	1: "动画",
+	168: "国创相关",
+	3: "音乐",
+	129: "舞蹈",
+	4: "游戏",
+	36: "科技",
+	188: "数码",
+	160: "生活",
+	119: "鬼畜",
+	155: "时尚",
+	5: "娱乐",
+	181: "影视",
+}
+rookie_dic = {
+	0: "全站",
+	1: "动画",
+	3: "音乐",
+	129: "舞蹈",
+	4: "游戏",
+	36: "科技",
+	188: "数码",
+	160: "生活",
+	119: "鬼畜",
+	155: "时尚",
+	5: "娱乐",
+	181: "影视",
+}
+bangumi_dic = {
+	1 :  "番剧",
+	4 : "国产动画",
+}
+cinema_dic = {
+	3 : "纪录片",
+	2 : "电影" ,
+	5 : "电视剧",
+}
+BaseDict = {
+	"all": all_or_origin_dic,
+        "origin": all_or_origin_dic,
+	"rookie": rookie_dic,
+        "bangumi": bangumi_dic,
+	"cinema": cinema_dic
+}
+dic = {
+	"all": 1,
+	"origin": 2,
+	"rookie": 3,
 }
 def video_now_infor(bid):
     url_video="https://api.bilibili.com/x/web-interface/view?bvid="+bid
@@ -27,3 +85,31 @@ def video_now_infor(bid):
     video.append(data["data"]["stat"]["share"])
     video.append(str(time.strftime("%Y-%m-%d-%H-%M-%S",time.localtime())))
     return video
+
+
+def get_url():
+    task_list=[]
+    for first in ["all","origin","rookie","bangumi","cinema"]:
+        for second in BaseDict[first].keys():
+            for third in day_dic.keys():
+                task={}
+                if ((third==1 or third==30) and first in ["bangumi", "cinema"]):
+                    continue
+                if first in ["bangumi", "cinema"]:
+                    url = "https://api.bilibili.com/pgc/web/rank/list?day={}&season_type={}".format(third, second)
+                if first in ["all", "origin", "rookie"]:
+                    url = "https://api.bilibili.com/x/web-interface/ranking?jsonp=jsonp&rid={}&day={}&type={}&arc_type=0&callback=__jp1".format(second, third, dic[first])
+                task["url"]=url
+                task["kind"]=BaseDict[first][second]
+                task["newor"]=category_dic[first]
+                task["last"]=day_dic[third]
+                task_list.append(task)
+    return task_list
+def rank_now():
+    task_list = get_url()
+    for task in task_list:
+        print(task["newor"],task["kind"],task["last"],task["url"])
+        task["context"]=getc(task["url"],5,0,header2,{})
+        task["time"]=str(time.strftime("%Y-%m-%d",time.localtime()))
+        time.sleep(2)
+    return task_list
