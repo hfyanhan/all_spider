@@ -73,7 +73,7 @@ dic = {
 }
 def video_now_infor(bid):
     url_video="https://api.bilibili.com/x/web-interface/view?bvid="+bid
-    data=json.loads(getc(url_video,5,0,header,{}))
+    data=json.loads(getc(url_video,5,0,header1,{}))
     video=[]
     video.append(bid)
     video.append(data["data"]["stat"]["view"])
@@ -98,7 +98,7 @@ def get_url():
                 if first in ["bangumi", "cinema"]:
                     url = "https://api.bilibili.com/pgc/web/rank/list?day={}&season_type={}".format(third, second)
                 if first in ["all", "origin", "rookie"]:
-                    url = "https://api.bilibili.com/x/web-interface/ranking?jsonp=jsonp&rid={}&day={}&type={}&arc_type=0&callback=__jp1".format(second, third, dic[first])
+                    url = "https://api.bilibili.com/x/web-interface/ranking?jsonp=jsonp&rid={}&day={}&type={}&arc_type=0".format(second, third, dic[first])
                 task["url"]=url
                 task["kind"]=BaseDict[first][second]
                 task["newor"]=category_dic[first]
