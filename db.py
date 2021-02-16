@@ -1,30 +1,29 @@
 import sqlite3
-from funcsq import *
+from pub_database import *
 
 
 def cer_bili():
-    cre=sqlite3.connect("bili.db")
-    t=cre.cursor()
-    #t.execute('''
-     #           CREATE TABLE video_history(
-      #          id int PRIMARY KEY,
-       #         bid text,
-        #        time text,
-         #       view int,
-          #      like int,
-           #     coin int,
-            #    favorite int,
-             #   share int,
-              #  danmaku int,
-               # reply int);''')
-    t.execute('''CREATE TABLE rank_history(
-               id int PRIMARY KEY,
-                kind text,
-                time text,
-                newor text,
-                last text,
-                context text);      
-       ''')
+    video_history={
+     'id':'int',
+     'bid':'text',
+     'time':'text',
+     'view':'int',
+     'like':'int',
+     'coin':'int',
+     'favorite':'int',
+     'share':'int',
+     'danmaku':'int',
+     'reply':'int',
+     'P_Key':'id'
+    }
+    rank_history_new={'id':'int',
+                  'bid':'text',
+                  'time':'text',
+                  'from_part':'char(5)',
+                  'content':'blob',
+                  'P_Key':'id'
+    }
+    cre_table("bili.db",rank_history_new,"rank_history_new")
 def insert_bhi(data):
     cre=sqlite3.connect("bili.db")
     item=data
@@ -32,14 +31,4 @@ def insert_bhi(data):
     t=cre.cursor()
     t.execute("insert into video_history(bid,view,danmaku,like,coin,favorite,reply,share,time,id)values(?,?,?,?,?,?,?,?,?,?)",item)
     cre.commit()
-def insert_rankhis(data):
-    for task in data:
-        item=[]
-        for string in ["context","time","newor","kind","last"]:
-            item.append(task[string])
-        cre=sqlite3.connect("bili.db")
-        item.append(checkhan(cre,"rank_history")+1)
-        t=cre.cursor()
-        t.execute("insert into rank_history(context,time,newor,kind,last,id)values(?,?,?,?,?,?)",item)
-        cre.commit()
-#cer_bili()    
+#cer_bili()
