@@ -1,11 +1,12 @@
 from pub_bili import *
-from db import *
 from pub_zhihu import *
 
-def bhi(data):
-    insert_bhi(video_now_infor(data))
+def bhi(bid):
+    data=bili_video_now_infor(bid)
+    data['id']=table_item_name("bili.db","video_history")+1
+    push_database(data,"bili.db",table="video_history")
 def brh():
-    data=rank_now()
+    data=bili_rank_now()
     for bid in data.keys():
         data[bid]['id']=table_item_name("bili.db","rank_history_new")+1
         push_database(data[bid],"bili.db",table="rank_history_new")

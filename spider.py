@@ -24,11 +24,6 @@ wait_time=[30,60,300,600]
 
 
 #def decide_order(item):
-    
-   
-
-
-
 
 
 #映射函数
@@ -98,7 +93,6 @@ while(end>=start):
     else:
         order_insert(flag=yon_flag)
     if start==end:
-        
         do_list=[]
         do_xyz=[]
         end=start=0
@@ -113,6 +107,6 @@ while(end>=start):
     for xyz_i in do_xyz[start]:
         out_xyz=out_xyz+xyz_i+" "
     print(do_list[start],out_xyz)
-    time.sleep(30)
+    time.sleep(1)
     ##Wait :分优先级爬取 不同优先级 不同时间间隔
     start=start+1
