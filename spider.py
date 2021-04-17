@@ -1,23 +1,20 @@
-import os,sys
-import time
+import os
+import sys
 import threading
+import time
 
 from func import *
 
-from pub_zhihu import *
-
-input_flag=0
-yon_flag=1
+local_order_flag=0
 
 do_list=[]
 do_xyz=[]
-b=[]
-xyz=[]
+order_insert_do_list_flag=[]
+order_xyz=[]
 order_list=[]
 order_times=[]
-d=[]
-start=0
-end=0
+do_start=0
+do_end=0
 order_end=0
 wait_time=[30,60,300,600]
 
@@ -35,78 +32,77 @@ order_translate={
 } 
 #执行次数
 order_num={
-    1:"No",
+    1:"NoLimit",
     2:"1",
     3:"1",
     }
 
-def order_insert(file_name="insert.txt",flag=1):
-    global order_end,input_flag
-    flag1=0
+
+def split_xyz(order):
+    return order.split()[1:1+len(order.split())]
+
+def order_insert(file_name="insert.txt"):
+    global order_end,order_xyz,local_order_flag
+    have_insert_flag=0
     try:
         f_insert=open(file_name,mode="r",encoding="utf-8")
-        flag1=1
+        have_insert_flag=1
     except Exception:
-        flag1=0
-    if flag1==1:
-        if input_flag==1:
-            return 
-        if flag==0:
-            input_flag=1
-        new=f_insert.readlines()
+        have_insert_flag=0
+    if have_insert_flag==1:
+        new_order_list=f_insert.readlines()
         f_insert.close()
-        if flag==1:    
+        if local_order_flag==0:
             os.remove(file_name)
-        for item in new:
-            new_item=item
-            if item[-1]=='\n':
-                new_item=item[0:-1]
+        for new_order in new_order_list:
+            if new_order[-1]=='\n':
+                new_order=new_order[0:-1]
             
-            order_list.append(new_item)
+            order_list.append(new_order)
+            order_xyz.append(split_xyz(new_order))
             order_end=order_end+1
-            b.append(True)
+            order_insert_do_list_flag.append(True)
             order_times.append(0)
+
 def one_order_process(order,i):
-    global order_times,end,xyz,do_xyz,do_list
-    if order_times[i]==0:
-        xyz.append(order.split( )[1:1+len(order.split( ))])
+    global order_times,do_end,order_xyz,do_xyz,do_list
+        
     order_times[i]=order_times[i]+1
     do_list.append(int(order[0]))
-    do_xyz.append(xyz[i])
-    end=end+1
+    do_xyz.append(order_xyz[i])
+    do_end=do_end+1
     
     if str(order_times[i])==order_num[int(order[0])]:
         return False
     return True
+
 def order_process():
     for i in range(0,order_end):
-        #print(b[i])
-        if b[i]==True:
-            b[i]=one_order_process(order_list[i],i)
+        if order_insert_do_list_flag[i]==True:
+            order_insert_do_list_flag[i]=one_order_process(order_list[i],i)
 
 
-          
-while(end>=start):
-    if len(sys.argv)==3 and sys.argv[1]=='-s':
-        yon_flag=0
-        order_insert(file_name=sys.argv[2],flag=yon_flag)
-    else:
-        order_insert(flag=yon_flag)
-    if start==end:
+if len(sys.argv)==3 and sys.argv[1]=='-s':
+    local_order_flag=1
+    order_insert(file_name=sys.argv[2])
+while(do_end>=do_start):
+    if local_order_flag==0:
+        order_insert()
+    if do_start==do_end:
         do_list=[]
         do_xyz=[]
-        end=start=0
+        do_end=do_start=0
         order_process()
         if do_list==[]:
             break    
-    t=threading.Thread(target=order_translate[do_list[start]],args=do_xyz[start])
+    t=threading.Thread(target=order_translate[do_list[do_start]],args=do_xyz[do_start])
     t.start()
     t.join()
     
     out_xyz=""
-    for xyz_i in do_xyz[start]:
+    for xyz_i in do_xyz[do_start]:
         out_xyz=out_xyz+xyz_i+" "
-    print(do_list[start],out_xyz)
-    time.sleep(1)
+    print(do_list[do_start],out_xyz)
+    time.sleep(30)
     ##Wait :分优先级爬取 不同优先级 不同时间间隔
-    start=start+1
+    do_start=do_start+1
