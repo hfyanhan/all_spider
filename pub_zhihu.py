@@ -23,8 +23,8 @@ def cre_zhihu():
 
 def zhihu_hot_search():
     time_now=str(time.strftime("%Y-%m-%d-%H-%M-%S",time.localtime()))
-    url2="https://www.zhihu.com/api/v3/feed/topstory/hot-lists/total?limit=100&desktop=true"
-    url="https://www.zhihu.com/api/v4/search/top_search"
+    url2="http://www.zhihu.com/api/v3/feed/topstory/hot-lists/total?limit=100&desktop=true"
+    url="http://www.zhihu.com/api/v4/search/top_search"
     t=json.loads(get_post(url))
     ans_list=[]
     for item in t['top_search']['words']:
@@ -36,7 +36,7 @@ def zhihu_hot_search():
     return ans_list
 def zhihu_hot_rank():
     time_now=str(time.strftime("%Y-%m-%d-%H-%M-%S",time.localtime()))
-    url="https://www.zhihu.com/api/v3/feed/topstory/hot-lists/total?limit=100&desktop=true"
+    url="http://www.zhihu.com/api/v3/feed/topstory/hot-lists/total?limit=100&desktop=true"
     t=json.loads(get_post(url))
     ans_list=[]
     for item in t['data']:

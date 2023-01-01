@@ -29,7 +29,7 @@ dic = {
 }
 def bili_video_now_infor(bid):
     url_video="http://api.bilibili.com/x/web-interface/view?bvid="+bid
-    data=json.loads(get_post(url=url_video,header=header.header1))
+    data=json.loads(get_post(url=url_video,header=header.header2))
     video={}
     video['bid']=bid
     video['view']=data["data"]["stat"]["view"]
@@ -47,16 +47,16 @@ def get_url():
     task_list=[]
     for first in all_dic.keys():
         task={}
-        url = "https://api.bilibili.com/x/web-interface/ranking/v2?rid={}&type=all".format(first)
+        url = "http://api.bilibili.com/x/web-interface/ranking/v2?rid={}&type=all".format(first)
         task["url"]=url
         task["kind"]=all_dic[first]
         task_list.append(task)
     task_rookie={
-        'url':"https://api.bilibili.com/x/web-interface/ranking/v2?rid=0&type=rookie",
+        'url':"http://api.bilibili.com/x/web-interface/ranking/v2?rid=0&type=rookie",
         'kind':'新人榜p'
     }
     task_origin={
-        'url':"https://api.bilibili.com/x/web-interface/ranking/v2?rid=0&type=origin",
+        'url':"http://api.bilibili.com/x/web-interface/ranking/v2?rid=0&type=origin",
         'kind':'原创榜q'
     }
     task_list.append(task_rookie)
@@ -116,3 +116,4 @@ def cer_bili():
                   'P_Key':'id'
     }
     cre_table("bili.db",rank_history_new,"rank_history_new")
+    cre_table("bili.db",video_history,"video_history")
